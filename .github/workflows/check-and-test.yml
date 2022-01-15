@@ -4,7 +4,7 @@ name: check push/pull_request
 
 jobs:
   check:
-    name: krabby
+    name: verify changes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,18 +18,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
-  test:
-    name: krabby
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
-        with:
-            toolchain: nightly
-            override: true
-            components: rustfmt, clippy
-      - name: Run cargo tests
+      - name: Run cargo test
         uses: actions-rs/cargo@v1
         with:
           command: test
