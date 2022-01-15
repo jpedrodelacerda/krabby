@@ -9,10 +9,14 @@ kb () {
       krabby $@
       ;;
     'cd' )
-      eval $"(krabby cd \"${@:2}\")"
+      local cmd=$"(krabby cd ${@:2})"
+      eval "echo $cmd"
+      eval $cmd
       ;;
-    *)
-      eval $"(krabby cd \"${@:1}\")"
+    * )
+      local cmd=$"(krabby cd ${@:1})"
+      eval "echo $cmd"
+      eval $cmd
       ;;
   esac
 }
