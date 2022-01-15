@@ -1,7 +1,7 @@
 use clap::{App, AppSettings, Arg};
 
-
 use serde_derive::{Deserialize, Serialize};
+use std::env;
 use std::ffi::OsString;
 use std::fmt;
 use std::fs::File;
@@ -9,7 +9,6 @@ use std::io::prelude::*;
 use std::io::{Error, ErrorKind};
 use std::path::{Path, PathBuf};
 use std::process::{exit, Command};
-use std::{env};
 
 fn main() {
     let home = dirs::home_dir().unwrap();
@@ -130,10 +129,16 @@ fn main() {
         Some(("cd", subcmd)) => {
             let project_name = subcmd.value_of("project").unwrap();
             if let Some(project) = db.get_project(project_name) {
-                project.change_to_project_path().unwrap_or_else(|_e| {
-                    eprintln!("oops cant go there");
-                    exit(1)
-                });
+                match project.change_to_project_path() {
+                    Ok(output_string) => {
+                        println!("{}", output_string);
+                        exit(0)
+                    }
+                    Err(_) => {
+                        eprintln!("oops cant go there");
+                        exit(1)
+                    }
+                };
             } else {
                 eprintln!("project {} was not found.", project_name);
                 exit(1)
