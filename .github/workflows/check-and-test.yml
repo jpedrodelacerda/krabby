@@ -1,6 +1,6 @@
 on: [push]
 
-name: check push/pull_request
+name: check push
 
 jobs:
   check:
