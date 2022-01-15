@@ -1,0 +1,9 @@
+author = "John Doe <john@doe.com>"
+
+[[projects]]
+name = "krabby"
+path = "/home/john/projetos/krabby"
+
+[[projects.scripts]]
+alias = "helloworld"
+command = "echo hello world"
