@@ -7,7 +7,6 @@ edition = "2018"
 
 [dependencies]
 clap = "3.0.7"
-derivative = "2.2.0"
 dirs = "3.0.2"
 serde = "1.0.127"
 serde_derive = "1.0.127"
