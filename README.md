@@ -12,6 +12,8 @@
   <a href="https://github.com/jpedrodelacerda/krabby/actions/workflows/code-health.yml"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/jpedrodelacerda/krabby/code-health.yml"></a>
 <!-- License -->
   <img src="https://img.shields.io/github/license/jpedrodelacerda/krabby" alt="License: MIT/Apache-2.0">
+<!-- Coverage -->
+  <a href="https://codecov.io/gh/jpedrodelacerda/krabby" ><img src="https://codecov.io/gh/jpedrodelacerda/krabby/branch/main/graph/badge.svg"/></a>
 </div>
 
 <br />
