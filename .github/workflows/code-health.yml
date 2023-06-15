@@ -1,0 +1,73 @@
+name: Code Health
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Health | Checkout
+        uses: actions/checkout@v3
+      - name: Code Health | Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          components: "rustfmt, clippy"
+      - name: Code Health | Cache
+        uses: Swatinem/rust-cache@v2
+      - name: Code Health | Run Clippy
+        run: cargo clippy
+      - name: Code Health | Format
+        run: cargo fmt
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: [health]
+    steps:
+      - name: Tests | Checkout
+        uses: actions/checkout@v3
+      - name: Tests | Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - name: Tests | Cache
+        uses: Swatinem/rust-cache@v2
+      - name: Tests | Install Nextest
+        run: cargo install cargo-nextest
+      - name: Tests | Run Nextest
+        run: cargo nextest run
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: [health, tests]
+    steps:
+      - name: Coverage | Checkout
+        uses: actions/checkout@v3
+      - name: Coverage | Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - name: Coverage | Cache
+        uses: Swatinem/rust-cache@v2
+      - name: Coverage | Install Tarpaulin
+        run: cargo install cargo-tarpaulin
+      - name: Coverage | Run Tarpaulin
+        run: cargo tarpaulin
+      - name: Coverage | Upload
+        uses: codecov/codecov-action@v1.0.2
+        if: github.ref == 'refs/heads/main'
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+      - name: Coverage | Archive code coverage results
+        uses: actions/upload-artifact@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          name: code-coverage-report
+          path: cobertura.xml

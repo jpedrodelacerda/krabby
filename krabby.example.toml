@@ -1,0 +1,5 @@
+name = "krabby"
+hook = ["hello"]
+
+[scripts]
+hello = "echo 'Welcome to Krabby!'"

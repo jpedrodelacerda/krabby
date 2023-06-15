@@ -1,0 +1,32 @@
+[package]
+name = "krabby-cli"
+version = "0.1.0"
+authors = ["João Lacerda <jpedrodelacerda@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "A tiny project manager!"
+readme = "README.md"
+homepage = "https://github.com/jpedrodelacerda/krabby"
+repository = "https://github.com/jpedrodelacerda/krabby"
+keywords = ["cli"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "krabby"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib.rs"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.66"
+clap = { version = "4.3.3", features = ["derive", "cargo"] }
+dirs = "4.0.0"
+indexmap = { version = "1.9.3", features = ["serde"] }
+owo-colors = "3.5.0"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.5.9"
+
+[dev-dependencies]
+rand = "0.8.4"

@@ -1,0 +1,9 @@
+name = "krabby"
+hook = ["welcome", "alias"]
+
+[scripts]
+alias = "alias krabby='cd ~/projetos/krabby/; cargo run --'"
+welcome = "echo \"Welcome to Krabby!\""
+hello = "echo hello"
+world = "echo world"
+test = "cargo nextest run"

@@ -1,0 +1,4 @@
+[default]
+run-types = ["Tests"]
+[report]
+out = ["Html", "Xml"]

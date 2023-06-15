@@ -1,0 +1,130 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release_please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    if: github.repository == 'jpedrodelacerda/krabby'
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: rust
+          draft: true
+
+  build:
+    name: Build project
+    needs: release_please
+    if: ${{ needs.release_please.outputs.release_created == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            name: krabby-x86_64-unknown-linux-gnu.tar.gz
+
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            name: krabby-x86_64-unknown-linux-musl.tar.gz
+
+          - target: i686-unknown-linux-musl
+            os: ubuntu-latest
+            name: krabby-i686-unknown-linux-musl.tar.gz
+
+          - target: x86_64-apple-darwin
+            os: macOS-11
+            name: krabby-x86_64-apple-darwin.tar.gz
+
+          - target: aarch64-apple-darwin
+            os: macOS-11
+            name: krabby-aarch64-apple-darwin.tar.gz
+
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@v3
+      - name: Setup | Toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Setup | Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Setup | Install Cross
+        if: matrix.os != 'ubuntu-latest'
+        run: cargo install cross
+
+      - name: Build | Build [Cross]
+        if: matrix.os != 'ubuntu-latest'
+        run: cross build --release --locked --target ${{ matrix.target }}
+
+      - name: Build | Build [Cargo]
+        if: matrix.os == 'ubuntu-latest'
+        run: cargo build --release --locked --target ${{ matrix.target }}
+
+      - name: Post Build | Prepare artifacts
+        run: |
+          cd target/${{ matrix.target }}/release
+          tar czvf ../../../${{ matrix.name }} krabby ../../../LICENSE_APACHE ../../../LICENSE_MIT
+          cd -
+
+      - name: Release | Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.name }}
+
+  upload_artifacts:
+    name: Add Build Artifacts to Release
+    needs: [release_please, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release | Artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Release | Checksums
+        run: for file in krabby-*/krabby-*; do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256"; done
+
+      - name: Release | Publish Release
+        run: gh release edit ${{ needs.release_please.outputs.tag_name }} --draft=false --repo=jpedrodelacerda/krabby
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release | Add Artifacts to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: krabby-*/krabby-*
+          tag_name: ${{ needs.release_please.outputs.tag_name }}
+
+  cargo_publish:
+    name: Publish Cargo Package
+    runs-on: ubuntu-latest
+    needs: [release_please, upload_artifacts]
+    if: ${{ needs.release_please.outputs.release_created == 'true' }}
+    steps:
+      - name: Cargo Publish | Checkout
+        uses: actions/checkout@v3
+
+      - name: Cargo Publish | Toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Build | Publish
+        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
