@@ -1,4 +1,4 @@
-<h1 align="center">`krabby`</h1>
+<h1 align="center">krabby</h1>
 <div align="center">
   <strong>
     A tiny project manager! :crab:
@@ -69,7 +69,7 @@ hello = "echo hello"
 world = "echo world"
 ```
 
-or
+and
 
 ```toml
 name = "krabby"
