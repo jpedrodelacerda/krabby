@@ -9,7 +9,7 @@
 
 <div align="center">
 <!-- Build Status -->
-  <a href="https://github.com/jpedrodelacerda/krabby/actions/workflows/code-health.yml"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/jpedrodelacerda/krabby/code-health"></a>
+  <a href="https://github.com/jpedrodelacerda/krabby/actions/workflows/code-health.yml"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/jpedrodelacerda/krabby/code-health.yml"></a>
 <!-- License -->
   <img src="https://img.shields.io/github/license/jpedrodelacerda/krabby" alt="License: MIT/Apache-2.0">
 </div>
