@@ -1,14 +1,14 @@
 use std::{io::Error, path::PathBuf, process::exit};
 
 use clap::Parser;
-use krabby::{
+use krabby_cli::{
     commands::*,
     database::Database,
     hook::ProjectHook,
     messages::Message,
     project::{self, ProjectName},
     script,
-    shell::Flavor,
+    shell::{self, Flavor},
 };
 use owo_colors::OwoColorize;
 
@@ -253,7 +253,7 @@ fn main() -> Result<(), Error> {
                         project::Project::from_file(project_file_path.unwrap()).unwrap();
                     let name = script::ScriptName::parse(script_name.to_string());
                     let command = script::Command::parse(script_command.to_string());
-                    let script = krabby::script::Script::new(name.clone(), command);
+                    let script = script::Script::new(name.clone(), command);
                     match project.add_script(name.clone(), script) {
                         Ok(_) => {
                             println!("The script {} was registered successfully!", name.bold());
@@ -283,7 +283,7 @@ fn main() -> Result<(), Error> {
 
             match shell_cmd {
                 ShellCommands::Bash | ShellCommands::Zsh => {
-                    let script = krabby::shell::Shell(Flavor::Bash).script();
+                    let script = shell::Shell(Flavor::Bash).script();
                     print!("{}", script);
                     exit(1);
                 }
